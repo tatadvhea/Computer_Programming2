@@ -165,13 +165,12 @@ static void printSalesSummary(Product* head) {
 	double lowestSale = 0;
 	string highestProduct = "N/A";
 	string lowestProduct = "N/A";
-	bool hasSales;
+	bool hasSales = true;
 
 	cout << "\n==== Sales Summary ====\n";
 	Product* current = head;
 	while (current) {
 		if (current->totalSales > 0) {  // Ensure we count only sold items
-			hasSales = true;
 			totalSales += current->totalSales;
 
 			if (current->totalSales > highestSale) {
