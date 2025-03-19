@@ -473,8 +473,20 @@ static void addProduct(ProductList& productList)
 
 	cout << "ADD NEW PRODUCT" << endl;
 	cout << "Product Name: ";
-	cin >> ws;
 	getline(cin, newProduct->productName);
+	
+	newProduct->productName[0] = toupper(newProduct->productName[0]); // Ensures that the product name follows the propper naming format
+	for (int i = 1; i < newProduct->productName.length(); i++)
+		{
+			newProduct->productName[i] = tolower(newProduct->productName[i]);
+		    
+			if (newProduct->productName[i] == 32)
+			{
+				++i;
+				newProduct->productName[i] = toupper(newProduct->productName[i]);
+			}
+		}
+	
 	do {
 		cout << "ID: ";
 		cin >> newProduct->productId;
@@ -490,8 +502,29 @@ static void addProduct(ProductList& productList)
 	cout << "Supplier Name: ";
 	cin.ignore();
 	getline(cin, supplierName);
-	cout << "\nPhone No.: ";
+	supplierName[0] = toupper(supplierName[0]); // Ensures that the supplier name follows the propper naming format
+		for (int i = 1; i < supplierName.length(); i++)
+		{
+			supplierName[i] = tolower(supplierName[i]);
+		    
+			if (supplierName[i] == 32)
+			{
+				++i;
+				supplierName[i] = toupper(supplierName[i]);
+			}
+		}
+	
+	do
+	{
+	cout << "\nPhone No.: (+63)";
 	cin >> supplierNumber;
+	
+	// Validate that the phone number is exactly 9 digits
+		if (supplierNumber <= 10000000) {
+			cout << "Invalid number! Phone number must be exactly 9 digits.\n";
+			continue;
+		}
+	} while (supplierNumber <= 10000000);
 
 	
 
