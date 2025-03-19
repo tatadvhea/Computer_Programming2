@@ -162,8 +162,9 @@ static void printSalesSummary(Product* head) {
 		return;
 	}
 
-	double totalSales;
-	double highestSale, lowestSale;
+	double totalSales = 0.0; // Initialize to 0 since it's accumulation scales
+	double highestSale = 0.0; // Start with 0   (very low value)
+	double lowestSale = DBL_MAX; // Start with a very high value
 	string highestProduct, lowestProduct;
 	bool hasSales;
 
