@@ -277,54 +277,25 @@ do
 }
 
 
-
-
-
-
-
-
-
 // Function to record sales  
 static void trackSales(ProductList& productList) {
-	
-	int quantity;
+	int productId, quantity;
 	double totalAmount;
-	int productId;
-	int choice;
-	do
-		{
-	cout << "\n==== Manage Product Stock ====\n";
+	int choice; cout << "\n==== Manage Product Stock ====\n";
 	cout << "1. Record a Sale (Reduce Stock)\n";
 	cout << "2. Add Stock\n";
 	cout << "Enter choice: ";
-	
-	if (!(cin >> choice) || choice < 1 || choice > 2) {  // Input validation
-		cout << "Invalid choice! Please select 1 or  2: ";
-			cin.clear();
-		cin.ignore();
-			continue; // Skips the current loop to reenter value in the next loop
-	}
+	cin >> choice;
 
 	cout << "Enter Product ID: ";
-			cin >> productId;
-			
-			int count = 0; // Counts the number of digits
-   while(productId != 0) {
-      productId /= 10;
-      count++;
-   }
-			
-			if (count != 3)
-			{
-				cout << "Invalid Id.";
-				continue;
-			}
+	cin >> productId;
+
 
 	Product* current = productList.head;
 	while (current) {
 		if (current->productId == productId) {
-			switch (choice) {
-			case 1: { // Track sales (Reduce stock)
+			if (choice == 1) {
+				// Track sales (Reduce stock)
 
 				cout << "Record a Sale (Reduce Stock)\n";
 				cout << "Enter quantity sold: ";
@@ -342,10 +313,10 @@ static void trackSales(ProductList& productList) {
 				SalesNode* newSale = new SalesNode(totalAmount);
 				newSale->next = salesHead;
 				salesHead = newSale;
+
 			}
-			break;
-			
-			case 2: { // Add stock
+			else if (choice == 2) {
+				// Add stock
 				cout << "Add Stock\n";
 				cout << "Enter quantity to add: ";
 				cin >> quantity;
@@ -358,10 +329,9 @@ static void trackSales(ProductList& productList) {
 				cout << "Stock updated. New stock: " << current->productStock << endl;
 
 			}
-			default: {
+			else {
 				cout << "Invalid choice!\n";
 				return;
-			}
 			}
 
 			saveInventoryToFile(productList); // Save updated inventory
@@ -370,8 +340,14 @@ static void trackSales(ProductList& productList) {
 		current = current->next;
 	}
 	cout << "Product not found!\n";
-} while (choice < 1 || choice > 3);
+
 }
+
+
+
+
+
+
 
 //Function to update product information
 static void updateProduct(ProductList& productList) {
