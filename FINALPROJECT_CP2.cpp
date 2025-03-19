@@ -379,12 +379,32 @@ static void trackSales(ProductList& productList) {
 
 //Function to update product information
 static void updateProduct(ProductList& productList) {
-	int id;
+	char updateId[3];
+	do
+	{
 	cout << "Enter Product ID to update: ";
-	cin >> id; 
+	
+	if (!(cin >> updateId) || strlen(updateId) != 3)
+		{
+			cout << endl << "Input the valid ID format (099).";
+			continue;
+		}
+	
+	for (int i = 0; i < strlen(updateId); i++)
+	{
+		if (updateId[i] < 48 || updateId[i] > 57)
+		{
+			cout << endl << "Input the vaild ID format (099).";
+			continue;
+		}
+	}
+	} while (strlen(updateId) != 3);
+	
 	Product* current = productList.head;
 	bool found = false;
 	while (current != nullptr) {
+		
+		int id = updateId[3];
 		
 		if (current->productId == id) {
 			found = true;
