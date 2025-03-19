@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
 #include <fstream>
 #include <iomanip>
@@ -153,6 +153,8 @@ static void loadInventoryFromFile(ProductList& productList) {
 }
 
 
+
+
 // Function to print total sales with highest and lowest selling products
 static void printSalesSummary(Product* head) {
 	if (!head) {
@@ -160,26 +162,26 @@ static void printSalesSummary(Product* head) {
 		return;
 	}
 
-	double totalSales = 0;
-	double highestSale = 0;
-	double lowestSale = 0;
-	string highestProduct = "N/A";
-	string lowestProduct = "N/A";
-	bool hasSales = true;
+	double totalSales = 0.0; // Initialize to 0 since it's accumulation scales
+	double highestSale = 0.0; // Start with 0   (very low value)
+	double lowestSale = DBL_MAX; // Start with a very high value
+	string highestProduct, lowestProduct;
+	bool hasSales;
 
 	cout << "\n==== Sales Summary ====\n";
 	Product* current = head;
 	while (current) {
 		if (current->totalSales > 0) {  // Ensure we count only sold items
+			hasSales = true;
 			totalSales += current->totalSales;
 
 			if (current->totalSales > highestSale) {
 				highestSale = current->totalSales;
-				highestProduct = current->productName;
+				highestProduct = current->productName; 
 			}
 			if (current->totalSales < lowestSale) {
 				lowestSale = current->totalSales;
-				lowestProduct = current->productName;
+				lowestProduct = current->productName; 
 			}
 		}
 		current = current->next;
@@ -204,7 +206,6 @@ static void printSalesSummary(Product* head) {
 		cout << "Lowest Selling Product: " << lowestProduct << " (Php" << lowestSale << ")\n";
 	}
 }
-
 
 // Function to display products with stock and out-of-stock products
 static void displayStockStatus(Product* head) {
@@ -275,102 +276,72 @@ do
 	}
 }
 
+
 // Function to record sales  
-
 static void trackSales(ProductList& productList) {
-	int quantity;
+	int productId, quantity;
 	double totalAmount;
-	int productId;
-	int choice;
+	int choice; cout << "\n==== Manage Product Stock ====\n";
+	cout << "1. Record a Sale (Reduce Stock)\n";
+	cout << "2. Add Stock\n";
+	cout << "Enter choice: ";
+	cin >> choice;
 
-	do {
-		cout << "\n==== Manage Product Stock ====\n";
-		cout << "1. Record a Sale (Reduce Stock)\n";
-		cout << "2. Add Stock\n";
-		cout << "Enter choice: ";
+	cout << "Enter Product ID: ";
+	cin >> productId;
 
-		if (!(cin >> choice) || choice < 1 || choice > 2) {
-			cout << "Invalid choice! Please select 1 or 2.\n";
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-			continue;
-		}
 
-		cout << "Enter Product ID (3 digits): ";
-		cin >> productId;
+	Product* current = productList.head;
+	while (current) {
+		if (current->productId == productId) {
+			if (choice == 1) {
+				// Track sales (Reduce stock)
 
-		// Validate that the product ID is exactly 3 digits
-		if (productId < 100 || productId > 999) {
-			cout << "Invalid ID! Product ID must be exactly 3 digits.\n";
-			continue;
-		}
+				cout << "Record a Sale (Reduce Stock)\n";
+				cout << "Enter quantity sold: ";
+				cin >> quantity;
 
-		// Search for product in linked list
-		Product* current = productList.head;
-		bool found = false;
-
-		while (current) {
-			if (current->productId == productId) { // Compare without modifying `productId`
-				found = true;
-
-				switch (choice) {
-				case 1: { // Record a Sale (Reduce stock)
-					cout << "Enter quantity sold: ";
-					cin >> quantity;
-
-					if (cin.fail() || quantity <= 0) {
-						cout << "Invalid quantity! Must be a positive number.\n";
-						cin.clear();
-						cin.ignore(numeric_limits<streamsize>::max(), '\n');
-						return;
-					}
-
-					if (quantity > current->productStock) {
-						cout << "Error: Not enough stock available!\n";
-						return;
-					}
-
-					current->productStock -= quantity;
-					totalAmount = quantity * current->productPrice;
-					current->totalSales += totalAmount; // ✅ Update total sales properly
-
-					cout << "\nSale recorded. Remaining stock: " << current->productStock << endl;
-					cout << "Total sales for this product: Php " << current->totalSales << endl;
-				} break;
-
-				case 2: { // Add Stock
-					cout << "Enter quantity to add: ";
-					cin >> quantity;
-
-					if (cin.fail() || quantity <= 0) {
-						cout << "Invalid quantity! Must be greater than zero.\n";
-						cin.clear();
-						cin.ignore(numeric_limits<streamsize>::max(), '\n');
-						return;
-					}
-
-					current->productStock += quantity;
-					cout << "Stock updated. New stock: " << current->productStock << endl;
-				} break;
-
-				default:
-					cout << "Invalid choice!\n";
+				if (quantity > current->productStock) {
+					cout << "Error: Not enough stock available!\n";
 					return;
 				}
+				current->productStock -= quantity;
+				totalAmount = quantity * current->productPrice;
+				cout << "\nSale recorded. Remaining stock: " << current->productStock << endl;
 
-				saveInventoryToFile(productList); //Save updated inventory to file
+				// Add sale record to linked list
+				SalesNode* newSale = new SalesNode(totalAmount);
+				newSale->next = salesHead;
+				salesHead = newSale;
+
+			}
+			else if (choice == 2) {
+				// Add stock
+				cout << "Add Stock\n";
+				cout << "Enter quantity to add: ";
+				cin >> quantity;
+
+				if (quantity <= 0) {
+					cout << "Invalid quantity. Must be greater than zero.\n";
+					return;
+				}
+				current->productStock += quantity;
+				cout << "Stock updated. New stock: " << current->productStock << endl;
+
+			}
+			else {
+				cout << "Invalid choice!\n";
 				return;
 			}
-			current = current->next;
-		}
 
-		if (!found) {
-			cout << "Product not found!\n"; // Only print if product wasn't found
+			saveInventoryToFile(productList); // Save updated inventory
+			return;
 		}
+		current = current->next;
+	}
+	cout << "Product not found!\n";
 
-	} while (choice < 1 || choice > 2);
 }
-
 
 
 
@@ -385,12 +356,17 @@ static void updateProduct(ProductList& productList) {
 	cout << "Enter Product ID to update: ";
 	cin >> updateId;
 		
-	// Validate that the product ID is exactly 3 digits
-		if (updateId < 100 || updateId > 999) {
-			cout << "Invalid ID! Product ID must be exactly 3 digits.\n";
-			continue;
-		}
-	} while (updateId < 100 || updateId > 999);
+	int count = 0; // Counts the number of digits
+   while(updateId != 0) {
+      updateId/= 10;
+      count++;
+   }
+			
+			if (count != 3)
+			{
+				cout << "Invalid Id.";
+				return;
+			}
 	
 	Product* current = productList.head;
 	bool found = false;
@@ -473,20 +449,8 @@ static void addProduct(ProductList& productList)
 
 	cout << "ADD NEW PRODUCT" << endl;
 	cout << "Product Name: ";
+	cin >> ws;
 	getline(cin, newProduct->productName);
-	
-	newProduct->productName[0] = toupper(newProduct->productName[0]); // Ensures that the product name follows the propper naming format
-	for (int i = 1; i < newProduct->productName.length(); i++)
-		{
-			newProduct->productName[i] = tolower(newProduct->productName[i]);
-		    
-			if (newProduct->productName[i] == 32)
-			{
-				++i;
-				newProduct->productName[i] = toupper(newProduct->productName[i]);
-			}
-		}
-	
 	do {
 		cout << "ID: ";
 		cin >> newProduct->productId;
@@ -502,29 +466,8 @@ static void addProduct(ProductList& productList)
 	cout << "Supplier Name: ";
 	cin.ignore();
 	getline(cin, supplierName);
-	supplierName[0] = toupper(supplierName[0]); // Ensures that the supplier name follows the propper naming format
-		for (int i = 1; i < supplierName.length(); i++)
-		{
-			supplierName[i] = tolower(supplierName[i]);
-		    
-			if (supplierName[i] == 32)
-			{
-				++i;
-				supplierName[i] = toupper(supplierName[i]);
-			}
-		}
-	
-	do
-	{
-	cout << "\nPhone No.: (+63)";
+	cout << "\nPhone No.: ";
 	cin >> supplierNumber;
-	
-	// Validate that the phone number is exactly 9 digits
-		if (supplierNumber <= 10000000) {
-			cout << "Invalid number! Phone number must be exactly 9 digits.\n";
-			continue;
-		}
-	} while (supplierNumber <= 10000000);
 
 	
 
