@@ -288,7 +288,7 @@ static void trackSales(ProductList& productList) {
 	
 	int quantity;
 	double totalAmount;
-	char productId[3];
+	int productId;
 	int choice;
 	do
 		{
@@ -305,24 +305,19 @@ static void trackSales(ProductList& productList) {
 	}
 
 	cout << "Enter Product ID: ";
-		
-		if (!(cin >> productId) || strlen(productId) != 3)
-		{
-			cout << endl << "Input the valid ID format (099).";
-			continue;
-		}
-	
-	for (int i = 0; i < strlen(productId); i++)
-	{
-		if (productId[i] < 48 || productId[i] > 57)
-		{
-			cout << endl << "Input the vaild ID format (099).";
-			continue;
-		}
-	}
-	
-	int iD = productId[3]; // Converts char productId to data type int to access the nodes
-
+			cin >> productId;
+			
+			int count = 0; // Counts the number of digits
+   while(productId != 0) {
+      number = number / 10;
+      count++;
+   }
+			
+			if (count != 3)
+			{
+				cout << "Invalid Id.";
+				continue;
+			}
 
 	Product* current = productList.head;
 	while (current) {
@@ -379,26 +374,23 @@ static void trackSales(ProductList& productList) {
 
 //Function to update product information
 static void updateProduct(ProductList& productList) {
-	char updateId[3];
+	int updateId;
 	do
 	{
 	cout << "Enter Product ID to update: ";
-	
-	if (!(cin >> updateId) || strlen(updateId) != 3)
-		{
-			cout << endl << "Input the valid ID format (099).";
-			continue;
-		}
-	
-	for (int i = 0; i < strlen(updateId); i++)
-	{
-		if (updateId[i] < 48 || updateId[i] > 57)
-		{
-			cout << endl << "Input the vaild ID format (099).";
-			continue;
-		}
-	}
-	} while (strlen(updateId) != 3);
+	cin >> updateId;
+		
+	int count = 0; // Counts the number of digits
+   while(updateId != 0) {
+      number = number / 10;
+      count++;
+   }
+			
+			if (count != 3)
+			{
+				cout << "Invalid Id.";
+				continue;
+			}
 	
 	Product* current = productList.head;
 	bool found = false;
@@ -413,6 +405,19 @@ static void updateProduct(ProductList& productList) {
 			cin.ignore();
 			string newName;
 			getline(cin, newName);
+		
+		newName[0] = toupper(newName[0]); // Ensures that the product name follows the propper naming format
+		for (int i = 1; i < newName.length(); i++)
+		{
+			newName[i] = tolower(newName[i]);
+		    
+			if (newName[i] == 32)
+			{
+				++i;
+				newName[i] = toupper(newName[i]);
+			}
+		}
+			
 			if (!newName.empty()) {
 				current->productName = newName;
 			}
@@ -466,7 +471,7 @@ static void addProduct(ProductList& productList)
 	string supplierName;
 	int supplierNumber;
 
-	Product* newProduct = new Product("", 0, 0.0, 0);  
+	Product* newProduct = new Product("", 0, 0.0, 0); // Temporary storage
 
 	cout << "ADD NEW PRODUCT" << endl;
 	cout << "Product Name: ";
