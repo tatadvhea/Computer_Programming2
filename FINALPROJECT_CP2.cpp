@@ -385,17 +385,12 @@ static void updateProduct(ProductList& productList) {
 	cout << "Enter Product ID to update: ";
 	cin >> updateId;
 		
-	int count = 0; // Counts the number of digits
-   while(updateId != 0) {
-      updateId/= 10;
-      count++;
-   }
-			
-			if (count != 3)
-			{
-				cout << "Invalid Id.";
-				return;
-			}
+	// Validate that the product ID is exactly 3 digits
+		if (updateId < 100 || updateId > 999) {
+			cout << "Invalid ID! Product ID must be exactly 3 digits.\n";
+			continue;
+		}
+	} while (updateId < 100 || updateId > 999);
 	
 	Product* current = productList.head;
 	bool found = false;
