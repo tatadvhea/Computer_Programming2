@@ -309,7 +309,7 @@ static void trackSales(ProductList& productList) {
 			
 			int count = 0; // Counts the number of digits
    while(productId != 0) {
-      number = number / 10;
+      productId /= 10;
       count++;
    }
 			
@@ -321,7 +321,7 @@ static void trackSales(ProductList& productList) {
 
 	Product* current = productList.head;
 	while (current) {
-		if (current->productId == iD) {
+		if (current->productId == productId) {
 			switch (choice) {
 			case 1: { // Track sales (Reduce stock)
 
@@ -375,30 +375,27 @@ static void trackSales(ProductList& productList) {
 //Function to update product information
 static void updateProduct(ProductList& productList) {
 	int updateId;
-	do
-	{
+	
 	cout << "Enter Product ID to update: ";
 	cin >> updateId;
 		
 	int count = 0; // Counts the number of digits
    while(updateId != 0) {
-      number = number / 10;
+      updateId/= 10;
       count++;
    }
 			
 			if (count != 3)
 			{
 				cout << "Invalid Id.";
-				continue;
+				return;
 			}
 	
 	Product* current = productList.head;
 	bool found = false;
 	while (current != nullptr) {
 		
-		int id = updateId[3];
-		
-		if (current->productId == id) {
+		if (current->productId == updateId) {
 			found = true;
 			cout << "Updating product: " << current->productName << endl;
 			cout << "Enter new name (press ENTER to keep the same): ";
